@@ -25,10 +25,9 @@ exports.getAll = async function getAll(){
 
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Users.findOne({attributes: ['id', 'pseudo', 'mail'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
             where: {
-                id:id,
-                deleted: null
+                id:id
             }
         })
         .then(result => {
@@ -43,12 +42,11 @@ exports.getOneById = async function getOneById(id){
     });
 };
 
-exports.getOneByPseudo = async function getOneByPseudo(somePseudo){
+exports.getOneByEmail = async function getOneByEmail(someEmail){
     return new Promise((resolve, reject) => {
-        Users.findOne({attributes: ['id', 'pseudo', 'mail'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
             where: {
-                pseudo:somePseudo,
-                deleted: null
+                email:someEmail
             }
         })
         .then(result => {
@@ -63,32 +61,12 @@ exports.getOneByPseudo = async function getOneByPseudo(somePseudo){
     });
 };
 
-exports.getAllOneUniverseId = async function getAllOneUniverseId(id){
+exports.getOneByAuth = async function getOneByAuth(email, password){
     return new Promise((resolve, reject) => {
-        Users.findAll({attributes: ['id', 'pseudo', 'mail'], where: {idUniverse: id, deleted: null}})
-        .then(allResult => {
-            if(allResult) {
-                let finalRes = [];
-                for(let res of allResult){
-                    finalRes.push(res.dataValues);
-                }
-                resolve(finalRes);
-            } else
-                resolve(false);
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.getOneByAuth = async function getOneByAuth(mail, pass){
-    return new Promise((resolve, reject) => {
-        Users.findOne({attributes: ['id', 'pseudo', 'mail'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
             where: {
-                mail:mail,
-                pass:pass,
-                deleted: null
+                email:email,
+                password:password
             }
         })
         .then(result => {
@@ -105,15 +83,14 @@ exports.getOneByAuth = async function getOneByAuth(mail, pass){
 
 exports.createOne = async function createOne(newUser){
     return new Promise((resolve, reject) => {
-        Users.findOne({attributes: ['id', 'pseudo', 'mail'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
             where: Sequelize.or(
-                {mail: newUser.mail}, 
-                {pseudo: newUser.pseudo})
+                {email: newUser.email})
         }).then((user) => {
             if(user)
                 resolve(false);
             else{
-                Users.create(newUser)
+                Client.create(newUser)
                 .then(user => {
                     if(user)
                         resolve(user.dataValues);
@@ -132,9 +109,8 @@ exports.createOne = async function createOne(newUser){
 
 exports.updateOne = async function updateOne(id, newUser){
     return new Promise((resolve, reject) => {
-        Users.update(
-            { pass: newUser.pass,
-              deleted: newUser.deleted }, 
+        Client.update(
+            { pass: newUser.password }, 
             { where: {id:id} })
         .then(result => {
             if(result)
@@ -150,7 +126,7 @@ exports.updateOne = async function updateOne(id, newUser){
 
 exports.deleteOneById = async function deleteOneById(id){
     return new Promise((resolve, reject) => {
-        Users.destroy({
+        Client.destroy({
             where: {
                 id:id
             }

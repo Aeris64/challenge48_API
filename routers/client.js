@@ -28,10 +28,10 @@ router.post('/login', (req, res, next) => {
     } catch(err) {
         req.body = req.body
     }
-    let mail = req.body.data.mail || null;
-    let pass = req.body.data.pass || null;
+    let email = req.body.data.email || null;
+    let password = req.body.data.password || null;
 
-    usersFunction.getOneByAuth(mail, pass)
+    clientFunction.getOneByAuth(email, password)
         .then((result) => {
             return res.send(result);
         })
@@ -46,7 +46,7 @@ router.get('/:id', (req, res, next) => {
 
     let id = req.params.id;
 
-    usersFunction.getOneById(id)
+    clientFunction.getOneById(id)
         .then((result) => {
             return res.send(result);
         })
@@ -55,29 +55,14 @@ router.get('/:id', (req, res, next) => {
         });
 });
 
-router.get('/pseudo/:pseudo', (req, res, next) => {
+router.get('/email/:email', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
 
-    let pseudo = req.params.pseudo;
-    if (!pseudo) return res.send(new error.BadRequestError('Pseudo should be initialized'));
+    let email = req.params.email;
+    if (!email) return res.send(new error.BadRequestError('Email should be initialized'));
 
-    usersFunction.getOneByPseudo(pseudo)
-        .then((result) => {
-            return res.send(result);
-        })
-        .catch((err) => {
-            return res.send(new error.NotFoundError(err));
-        });
-});
-
-router.get('/universes/:id', (req, res, next) => {
-    let myAuth = new error.KeyAuthentifictaion(req.query.key);
-    if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
-
-    let id = req.params.id;
-
-    usersFunction.getAllOneUniverseId(id)
+    clientFunction.getOneByEmail(email)
         .then((result) => {
             return res.send(result);
         })
@@ -95,18 +80,22 @@ router.post('/', (req, res, next) => {
     } catch(err) {
         req.body = req.body
     };
-    let date = new Date().toJSON().slice(0, 10);
 
-    let user = {
-        id: uuid(),
-        pseudo: req.body.data.pseudo,
-        pass: req.body.data.pass,
-        mail: req.body.data.mail,
-        createdAt: date,
-        deleted: null
+    let client = {
+        id: req.body.data.id,
+        email: req.body.data.email,
+        nom: req.body.data.nom,
+        prenom: req.body.data.prenom,
+        contact: req.body.data.contact,
+        ville: req.body.data.ville,
+        code_postal: req.body.data.code_postal,
+        rue: req.body.data.rue,
+        position_LAT: req.body.data.position_LAT,
+        position_LONG: req.body.data.position_LONG,
+        password: req.body.data.password
     };
 
-    usersFunction.createOne(user)
+    clientFunction.createOne(client)
         .then((result) => {
             return res.send(result);
         })
@@ -130,21 +119,19 @@ router.put('/:id', async (req, res, next) => {
     if(req.body.data.deleted){
         date = new Date().toJSON().slice(0, 10);
     }
-    let user = {
-        pass: req.body.data.pass,
-        deleted: date || null
+    let client = {
+        password: req.body.data.password
     };
 
-    await usersFunction.getOneById(id)
+    await clientFunction.getOneById(id)
         .then((result) => {
-            if(!user.pass) user.pass = result.pass;
-            if(!user.deleted) user.deleted = result.deleted;
+            if(!client.password) client.password = result.password;
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));
         });
 
-    usersFunction.updateOne(id, user)
+    clientFunction.updateOne(id, client)
         .then((result) => {
             return res.send(result);
         })
@@ -159,7 +146,7 @@ router.delete('/:id', (req, res, next) => {
     
     let id = req.params.id;
 
-    usersFunction.deleteOneById(id)
+    clientFunction.deleteOneById(id)
         .then((result) => {
             return res.send(result);
         })
