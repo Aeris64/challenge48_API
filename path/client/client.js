@@ -6,7 +6,7 @@ const Client = require('../../model/client').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        Client.findAll({attributes: ['id', 'email', 'nom', 'prenom', 'contact']})
+        Client.findAll({attributes: ['id', 'email', 'nom', 'prenom', 'contact', 'position_LAT', 'position_LONG']})
         .then(allResult => {
             if(allResult) {
                 let finalRes = [];
@@ -25,7 +25,7 @@ exports.getAll = async function getAll(){
 
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact', 'position_LAT', 'position_LONG'],
             where: {
                 id:id
             }
@@ -44,7 +44,7 @@ exports.getOneById = async function getOneById(id){
 
 exports.getOneByEmail = async function getOneByEmail(someEmail){
     return new Promise((resolve, reject) => {
-        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact', 'position_LAT', 'position_LONG'],
             where: {
                 email:someEmail
             }
@@ -63,7 +63,7 @@ exports.getOneByEmail = async function getOneByEmail(someEmail){
 
 exports.getOneByAuth = async function getOneByAuth(email, password){
     return new Promise((resolve, reject) => {
-        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact', 'position_LAT', 'position_LONG'],
             where: {
                 email:email,
                 password:password
@@ -83,7 +83,7 @@ exports.getOneByAuth = async function getOneByAuth(email, password){
 
 exports.createOne = async function createOne(newClient){
     return new Promise((resolve, reject) => {
-        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
+        Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact', 'position_LAT', 'position_LONG'],
             where: Sequelize.or(
                 {email: newClient.email})
         }).then((client) => {

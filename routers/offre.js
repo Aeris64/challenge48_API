@@ -9,6 +9,8 @@ const categorieFunction = require('../path/categorie/categorie');
 const specialiteFunction = require('../path/categorie/specialite');
 const clientFunction = require('../path/client/client');
 
+const nbKm = 1;
+
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
@@ -16,6 +18,46 @@ router.get('/', (req, res, next) => {
     offreFunction.getAll()
         .then((result) => {
             return res.send(result);
+        })
+        .catch((err) => {
+            return res.send(new error.NotFoundError(err));
+        });
+});
+
+router.get('/around/link', (req, res, next) => {
+    let myAuth = new error.KeyAuthentifictaion(req.query.key);
+    if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
+
+    // -> remove commentaire for test local
+    // req.body.data = {};
+    if(!req.body.data) return res.send(new error.BadRequestError('Need position'));
+
+    let myPos = {
+        lat: req.body.data.lat || 44.870168199,
+        long: req.body.data.long || -0.551752599
+    }
+    
+    offreFunction.getAll()
+        .then(async (result) => {
+            let finalRes = [];
+            for(let res of result){
+                let client = await clientFunction.getOneById(res.idClient);
+                let testLat = client.dataValues.position_LAT;
+                let testLong = client.dataValues.position_LONG;
+                let calcul = Math.acos(Math.sin(myPos.lat*(Math.PI / 180))*Math.sin(testLat*(Math.PI / 180))+Math.cos(myPos.lat*(Math.PI / 180))*Math.cos(testLat*(Math.PI / 180))*Math.cos(myPos.long*(Math.PI/180)-testLong*(Math.PI/180)))*6371
+                if(calcul < nbKm){
+                    let temp = res;
+                    let categorie = await categorieFunction.getOneById(temp.id);
+                    let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                    temp.client = client.dataValues;
+                    temp.categorie = categorie.dataValues;
+                    temp.categorie.specialite = specialite.dataValues.libelle;
+                    temp.idClient = undefined;
+                    temp.idCateg = undefined;
+                    finalRes.push(temp);
+                }
+            }
+            return res.send(finalRes);
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));
