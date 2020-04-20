@@ -6,10 +6,7 @@ const Client = require('../../model/client').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        Client.findAll({attributes: ['id', 'email', 'nom', 'prenom', 'contact'], 
-            where: {
-                deleted: null
-            }})
+        Client.findAll({attributes: ['id', 'email', 'nom', 'prenom', 'contact']})
         .then(allResult => {
             if(allResult) {
                 let finalRes = [];
