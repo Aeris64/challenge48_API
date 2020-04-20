@@ -7,6 +7,7 @@ const uuid = require('uuid/v4');
 const offreFunction = require('../path/offre/offre');
 const categorieFunction = require('../path/categorie/categorie');
 const specialiteFunction = require('../path/categorie/specialite');
+const clientFunction = require('../path/client/client');
 
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
@@ -46,10 +47,14 @@ router.get('/:id/link', (req, res, next) => {
         .then(async (result) => {
             if(!result.dataValues) return res.send(new error.NotFoundError('Offre not found...'));
             let finalRes = result.dataValues;
+            let client = await clientFunction.getOneById(finalRes.idClient);
             let categorie = await categorieFunction.getOneById(finalRes.id);
             let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
-            finalRes.categorie = categorie.dataValues.libelle;
-            finalRes.specialite = specialite.dataValues.libelle;
+            finalRes.client = client.dataValues;
+            finalRes.categorie = categorie.dataValues;
+            finalRes.categorie.specialite = specialite.dataValues.libelle;
+            finalRes.idClient=undefined;
+            finalRes.idCateg=undefined;
             return res.send(finalRes);
         })
         .catch((err) => {
