@@ -34,7 +34,7 @@ exports.getOneById = async function getOneById(id){
             if(result) {
                 resolve(result);
             } else
-                reject('User not found...');
+                reject('Client not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -53,7 +53,7 @@ exports.getOneByEmail = async function getOneByEmail(someEmail){
             if(result) {
                 resolve(result);
             } else
-                reject('User not found...');
+                reject('Client not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -73,7 +73,7 @@ exports.getOneByAuth = async function getOneByAuth(email, password){
             if(result)
                 resolve(result.dataValues);
             else
-                reject('User not found...');
+                reject('Client not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -81,21 +81,21 @@ exports.getOneByAuth = async function getOneByAuth(email, password){
     });
 };
 
-exports.createOne = async function createOne(newUser){
+exports.createOne = async function createOne(newClient){
     return new Promise((resolve, reject) => {
         Client.findOne({attributes: ['id', 'email', 'nom', 'prenom', 'contact'],
             where: Sequelize.or(
-                {email: newUser.email})
-        }).then((user) => {
-            if(user)
+                {email: newClient.email})
+        }).then((client) => {
+            if(client)
                 resolve(false);
             else{
-                Client.create(newUser)
-                .then(user => {
-                    if(user)
-                        resolve(user.dataValues);
+                Client.create(newClient)
+                .then(client => {
+                    if(client)
+                        resolve(client.dataValues);
                     else
-                        reject('User not create...');
+                        reject('Client not create...');
                 }).catch(err => {
                     console.log('error', err);
                     reject(err);
@@ -107,16 +107,16 @@ exports.createOne = async function createOne(newUser){
     });
 };
 
-exports.updateOne = async function updateOne(id, newUser){
+exports.updateOne = async function updateOne(id, newClient){
     return new Promise((resolve, reject) => {
         Client.update(
-            { pass: newUser.password }, 
+            { pass: newClient.password }, 
             { where: {id:id} })
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('User not found...');
+                reject('Client not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -133,9 +133,9 @@ exports.deleteOneById = async function deleteOneById(id){
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some User.. Good.. job?');
+                resolve('You have destroy sucessfully some Client.. Good.. job?');
             } else
-                reject('User not found...');
+                reject('Client not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);

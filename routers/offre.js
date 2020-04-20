@@ -22,6 +22,32 @@ router.get('/', (req, res, next) => {
         });
 });
 
+router.get('/link', (req, res, next) => {
+    let myAuth = new error.KeyAuthentifictaion(req.query.key);
+    if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
+    
+    offreFunction.getAll()
+        .then(async (result) => {
+            let finalRes = [];
+            for(let res of result){
+                let temp = res;
+                let client = await clientFunction.getOneById(temp.idClient);
+                let categorie = await categorieFunction.getOneById(temp.id);
+                let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                temp.client = client.dataValues;
+                temp.categorie = categorie.dataValues;
+                temp.categorie.specialite = specialite.dataValues.libelle;
+                temp.idClient = undefined;
+                temp.idCateg = undefined;
+                finalRes.push(temp);
+            }
+            return res.send(finalRes);
+        })
+        .catch((err) => {
+            return res.send(new error.NotFoundError(err));
+        });
+});
+
 router.get('/:id', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
@@ -53,8 +79,8 @@ router.get('/:id/link', (req, res, next) => {
             finalRes.client = client.dataValues;
             finalRes.categorie = categorie.dataValues;
             finalRes.categorie.specialite = specialite.dataValues.libelle;
-            finalRes.idClient=undefined;
-            finalRes.idCateg=undefined;
+            finalRes.idClient = undefined;
+            finalRes.idCateg = undefined;
             return res.send(finalRes);
         })
         .catch((err) => {
