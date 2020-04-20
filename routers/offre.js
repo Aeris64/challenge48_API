@@ -5,6 +5,8 @@ const uuid = require('uuid/v4');
 
 // Import model
 const offreFunction = require('../path/offre/offre');
+const categorieFunction = require('../path/categorie/categorie');
+const specialiteFunction = require('../path/categorie/specialite');
 
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
@@ -25,7 +27,7 @@ router.get('/:id', (req, res, next) => {
     
     let id = req.params.id;
 
-    itemsFunction.getOneById(id)
+    offreFunction.getOneById(id)
         .then((result) => {
             return res.send(result);
         })
@@ -34,15 +36,21 @@ router.get('/:id', (req, res, next) => {
         });
 });
 
-router.get('/universes/:id', (req, res, next) => {
+router.get('/:id/link', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
     let id = req.params.id;
 
-    itemsFunction.getAllByIdUniverse(id)
-        .then((result) => {
-            return res.send(result);
+    offreFunction.getOneById(id)
+        .then(async (result) => {
+            if(!result.dataValues) return res.send(new error.NotFoundError('Offre not found...'));
+            let finalRes = result.dataValues;
+            let categorie = await categorieFunction.getOneById(finalRes.id);
+            let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+            finalRes.categorie = categorie.dataValues.libelle;
+            finalRes.specialite = specialite.dataValues.libelle;
+            return res.send(finalRes);
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));
@@ -58,16 +66,16 @@ router.post('/', (req, res, next) => {
     } catch(err) {
         req.body = req.body;
     }
-    let items = {
-        idItems: uuid(),
-        name: req.body.data.name,
+    let offre = {
+        id: req.body.data.id,
+        idClient: req.body.data.idClient,
+        idCateg: req.body.data.idCateg,
         libelle: req.body.data.libelle,
-        unlocked: req.body.data.unlocked,
-        idUniverse: req.body.data.idUniverse,
-        deleted: null
+        payant: req.body.data.payant,
+        horaires: req.body.data.horaires
     };
 
-    itemsFunction.createOne(items)
+    offreFunction.createOne(offre)
         .then((result) => {
             return res.send(result);
         })
@@ -87,29 +95,23 @@ router.put('/:id', async (req, res, next) => {
     } catch(err) {
         req.body = req.body
     }
-    let date = null;
-    if(req.body.data.deleted){
-        date = new Date().toJSON().slice(0, 10);
-    }
-    let items = {
-        name: req.body.data.name,
+    let offre = {
         libelle: req.body.data.libelle,
-        unlocked: req.body.data.unlocked,
-        deleted: date || null
+        payant: req.body.data.payant,
+        horaires: req.body.data.horaires
     };
 
-    await itemsFunction.getOneById(id)
+    await offreFunction.getOneById(id)
         .then((result) => {
-            if(!items.name) items.name = result.name;
-            if(!items.libelle) items.libelle = result.libelle;
-            if(items.unlocked == undefined) items.unlocked = result.unlocked;
-            if(!items.deleted) items.deleted = result.deleted;
+            if(!offre.libelle) offre.libelle = result.libelle;
+            if(!offre.payant) offre.payant = result.payant;
+            if(!offre.horaires) offre.horaires = result.horaires;
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));
         });
 
-    itemsFunction.updateOne(id, items)
+    offreFunction.updateOne(id, offre)
         .then((result) => {
             return res.send(result);
         })
@@ -124,7 +126,7 @@ router.delete('/:id', (req, res, next) => {
     
     let id = req.params.id;
 
-    itemsFunction.deleteOneById(id)
+    offreFunction.deleteOneById(id)
         .then((result) => {
             return res.send(result);
         })

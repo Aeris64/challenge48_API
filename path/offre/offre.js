@@ -22,17 +22,16 @@ exports.getAll = async function getAll(){
 
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Items.findOne({
+        Offre.findOne({
             where: {
-                idItems:id,
-                deleted: null
+                id:id
             }
         })
         .then(result => {
             if(result) {
                 resolve(result);
             } else
-                reject('Item not found...');
+                reject('Offre not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -40,34 +39,14 @@ exports.getOneById = async function getOneById(id){
     });
 };
 
-exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
+exports.createOne = async function createOne(newOffre){
     return new Promise((resolve, reject) => {
-        Items.findAll({
-            where: {
-                idUniverse:id,
-                deleted: null
-            }
-        })
-        .then(result => {
-            if(result) {
-                resolve(result);
-            } else
-                reject('Items not found...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.createOne = async function createOne(newItems){
-    return new Promise((resolve, reject) => {
-        Items.create(newItems)
+        Offre.create(newOffre)
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Item not create...');
+                reject('Offre not create...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -75,19 +54,18 @@ exports.createOne = async function createOne(newItems){
     });
 };
 
-exports.updateOne = async function updateOne(id, newItems){
+exports.updateOne = async function updateOne(id, newOffre){
     return new Promise((resolve, reject) => {
-        Items.update(
-            { name: newItems.name,
-              libelle: newItems.libelle,
-              unlocked: newItems.unlocked,
-              deleted: newItems.deleted },
-            { where: {idItems:id} })
+        Offre.update(
+            { libelle: newOffre.libelle,
+              payant: newOffre.payant,
+              horaires: newOffre.horaires },
+            { where: {id:id} })
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Items not found...');
+                reject('Offre not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -97,16 +75,16 @@ exports.updateOne = async function updateOne(id, newItems){
 
 exports.deleteOneById = async function deleteOneById(id){
     return new Promise((resolve, reject) => {
-        Items.destroy({
+        Offre.destroy({
             where: {
-                idItems:id
+                id:id
             }
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some Items.. Good.. job?');
+                resolve('You have destroy sucessfully some Offre.. Good.. job?');
             } else
-                reject('Items not found...');
+                reject('Offre not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
