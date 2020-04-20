@@ -1,11 +1,9 @@
 // Import function
-const Stuffs = require('../../model/stuff').module;
+const Categorie = require('../../model/categorie').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        Stuffs.findAll({
-            where: { deleted: null }
-        })
+        Categorie.findAll({})
         .then(allResult => {
             if(allResult) {
                 let finalRes = [];
@@ -14,7 +12,7 @@ exports.getAll = async function getAll(){
                 }
                 resolve(finalRes);
             } else
-                resolve(false);
+                reject(false);
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -24,9 +22,9 @@ exports.getAll = async function getAll(){
 
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Stuffs.findOne({
+        Stats.findOne({
             where: {
-                idStuff:id,
+                idStats:id,
                 deleted: null
             }
         })
@@ -34,7 +32,7 @@ exports.getOneById = async function getOneById(id){
             if(result) {
                 resolve(result);
             } else
-                reject('Stuff not found...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -44,17 +42,20 @@ exports.getOneById = async function getOneById(id){
 
 exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
     return new Promise((resolve, reject) => {
-        Stuffs.findAll({
+        Stats.findAll({
             where: {
                 idUniverse:id,
                 deleted: null
-            }
+            },
+            order: [
+                ['order', 'ASC']
+            ]
         })
         .then(result => {
             if(result) {
                 resolve(result);
             } else
-                reject('Stuff not found...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -62,14 +63,14 @@ exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
     });
 };
 
-exports.createOne = async function createOne(newStuff){
+exports.createOne = async function createOne(newStats){
     return new Promise((resolve, reject) => {
-        Stuffs.create(newStuff)
+        Stats.create(newStats)
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Stuff not create...');
+                reject('Stats not create...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -77,21 +78,18 @@ exports.createOne = async function createOne(newStuff){
     });
 };
 
-exports.updateOne = async function updateOne(id, newStuff){
+exports.updateOne = async function updateOne(id, newStats){
     return new Promise((resolve, reject) => {
-        Stuffs.update(
-            { name: newStuff.name,
-              libelle: newStuff.libelle,
-              unlocked: newStuff.unlocked,
-              number: newStuff.number,
-              idSlot: newStuff.idSlot,
-              deleted: newStuff.deleted },
-            { where: {idStuff:id} })
+        Stats.update(
+            { name: newStats.name,
+              order: newStats.order,
+              deleted: newStats.deleted },
+            { where: {idStats:id} })
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Stuff not found...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -101,16 +99,16 @@ exports.updateOne = async function updateOne(id, newStuff){
 
 exports.deleteOneById = async function deleteOneById(id){
     return new Promise((resolve, reject) => {
-        Stuffs.destroy({
+        Stats.destroy({
             where: {
-                idStuff:id
+                idStats:id
             }
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some Stuff.. Good.. job?');
+                resolve('You have destroy sucessfully some Stats.. Good.. job?');
             } else
-                reject('Stuff not found...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);

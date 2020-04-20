@@ -2,11 +2,11 @@
 const Sequelize = require('sequelize');
 
 // Import function
-const Users = require('../../model/users').module;
+const Client = require('../../model/client').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        Users.findAll({attributes: ['id', 'pseudo', 'mail'], 
+        Client.findAll({attributes: ['id', 'email', 'nom', 'prenom', 'contact'], 
             where: {
                 deleted: null
             }})

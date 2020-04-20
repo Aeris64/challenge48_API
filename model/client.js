@@ -32,19 +32,23 @@ let Client = sequelizeConnection.define('CLIENT', {
     },
     code_postal: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     rue: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false
     },
     position_LAT: {
       type: Sequelize.FLOAT,
-      allowNull: true
+      allowNull: false
     },
     position_LONG: {
       type: Sequelize.FLOAT,
-      allowNull: true
+      allowNull: false
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false
     }
   },{
     timestamps: false,

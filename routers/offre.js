@@ -1,31 +1,16 @@
 // Import module
 const router = require('express').Router();
 const error = require('../errors/notFound');
+const uuid = require('uuid/v4');
 
 // Import model
-const statsLearnFunction = require('../path/stats/statsLearn');
-const statsFunction = require('../path/stats/stats');
+const offreFunction = require('../path/offre/offre');
 
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
-    statsLearnFunction.getAll()
-        .then((result) => {
-            return res.send(result);
-        })
-        .catch((err) => {
-            return res.send(new error.NotFoundError(err));
-        })
-});
-
-router.get('/characters/:id', (req, res, next) => {
-    let myAuth = new error.KeyAuthentifictaion(req.query.key);
-    if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
-    
-    let id = req.params.id;
-
-    statsLearnFunction.getAllByIdCharacters(id)
+    offreFunction.getAll()
         .then((result) => {
             return res.send(result);
         })
@@ -34,23 +19,30 @@ router.get('/characters/:id', (req, res, next) => {
         });
 });
 
-router.get('/characters/:id/link', (req, res, next) => {
+router.get('/:id', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
     let id = req.params.id;
 
-    statsLearnFunction.getAllByIdCharacters(id)
-        .then(async (result) => {
-            finalRes = [];
-            for(let statLearn of result){
-                let temp = statLearn.dataValues;
-                let stat = await statsFunction.getOneById(temp.idStats);
-                temp.name = stat.dataValues.name;
-                temp.idUniverse = stat.dataValues.idUniverse;
-                finalRes.push(temp);
-            }
-            return res.send(finalRes);
+    itemsFunction.getOneById(id)
+        .then((result) => {
+            return res.send(result);
+        })
+        .catch((err) => {
+            return res.send(new error.NotFoundError(err));
+        });
+});
+
+router.get('/universes/:id', (req, res, next) => {
+    let myAuth = new error.KeyAuthentifictaion(req.query.key);
+    if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
+    
+    let id = req.params.id;
+
+    itemsFunction.getAllByIdUniverse(id)
+        .then((result) => {
+            return res.send(result);
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));
@@ -66,13 +58,16 @@ router.post('/', (req, res, next) => {
     } catch(err) {
         req.body = req.body;
     }
-    let statsLearn = {
-        idCharacters: req.body.data.idCharacters,
-        idStats: req.body.data.idStats,
-        number: req.body.data.number
+    let items = {
+        idItems: uuid(),
+        name: req.body.data.name,
+        libelle: req.body.data.libelle,
+        unlocked: req.body.data.unlocked,
+        idUniverse: req.body.data.idUniverse,
+        deleted: null
     };
 
-    statsLearnFunction.createOne(statsLearn)
+    itemsFunction.createOne(items)
         .then((result) => {
             return res.send(result);
         })
@@ -81,22 +76,40 @@ router.post('/', (req, res, next) => {
         });
 });
 
-router.put('/', (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
+    let id = req.params.id;
+
     try{
         req.body = JSON.parse(Object.keys(req.body)[0])
     } catch(err) {
         req.body = req.body
     }
-    let statsLearn = {
-        idCharacters: req.body.data.idCharacters,
-        idStats: req.body.data.idStats,
-        number: req.body.data.number
+    let date = null;
+    if(req.body.data.deleted){
+        date = new Date().toJSON().slice(0, 10);
+    }
+    let items = {
+        name: req.body.data.name,
+        libelle: req.body.data.libelle,
+        unlocked: req.body.data.unlocked,
+        deleted: date || null
     };
 
-    statsLearnFunction.updateOne(statsLearn)
+    await itemsFunction.getOneById(id)
+        .then((result) => {
+            if(!items.name) items.name = result.name;
+            if(!items.libelle) items.libelle = result.libelle;
+            if(items.unlocked == undefined) items.unlocked = result.unlocked;
+            if(!items.deleted) items.deleted = result.deleted;
+        })
+        .catch((err) => {
+            return res.send(new error.NotFoundError(err));
+        });
+
+    itemsFunction.updateOne(id, items)
         .then((result) => {
             return res.send(result);
         })
@@ -105,21 +118,13 @@ router.put('/', (req, res, next) => {
         });
 });
 
-router.delete('/', (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
-    try{
-        req.body = JSON.parse(Object.keys(req.body)[0])
-    } catch(err) {
-        req.body = req.body
-    }
-    let statsLearn = {
-        idCharacters: req.body.data.idCharacters,
-        idStats: req.body.data.idStats
-    };
+    let id = req.params.id;
 
-    statsLearnFunction.deleteOneByIds(statsLearn)
+    itemsFunction.deleteOneById(id)
         .then((result) => {
             return res.send(result);
         })

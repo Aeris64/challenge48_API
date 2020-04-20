@@ -1,9 +1,9 @@
 // Import function
-const StatsLearn = require('../../model/statsLearn').module;
+const Specialite = require('../../model/specialite').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        StatsLearn.findAll({})
+        Specialite.findAll({})
         .then(allResult => {
             if(allResult) {
                 let finalRes = [];
@@ -12,7 +12,7 @@ exports.getAll = async function getAll(){
                 }
                 resolve(finalRes);
             } else
-                resolve(false);
+                reject(false);
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -20,18 +20,19 @@ exports.getAll = async function getAll(){
     });
 };
 
-exports.getAllByIdCharacters = async function getAllByIdCharacters(id){
+exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        StatsLearn.findAll({
+        Stats.findOne({
             where: {
-                idCharacters:id
+                idStats:id,
+                deleted: null
             }
         })
         .then(result => {
             if(result) {
                 resolve(result);
             } else
-                reject('Not statsLearn...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -39,51 +40,75 @@ exports.getAllByIdCharacters = async function getAllByIdCharacters(id){
     });
 };
 
-exports.createOne = async function createOne(newStatsLearn){
+exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
     return new Promise((resolve, reject) => {
-        StatsLearn.create(newStatsLearn)
-        .then(result => {
-            if(result)
-                resolve(result.dataValues);
-            else
-                reject('StatsLearn not create...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.updateOne = async function updateOne(newStatsLearn){
-    return new Promise((resolve, reject) => {
-        StatsLearn.update(
-            { number: newStatsLearn.number },
-            { where: {idCharacters: newStatsLearn.idCharacters, idStats: newStatsLearn.idStats} })
-        .then(result => {
-            if(result)
-                resolve(result.dataValues);
-            else
-                reject('StatsLearn not found...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.deleteOneByIds = async function deleteOneByIds(statsLearn){
-    return new Promise((resolve, reject) => {
-        StatsLearn.destroy({
+        Stats.findAll({
             where: {
-                idCharacters: statsLearn.idCharacters,
-                idStats: statsLearn.idStats
+                idUniverse:id,
+                deleted: null
+            },
+            order: [
+                ['order', 'ASC']
+            ]
+        })
+        .then(result => {
+            if(result) {
+                resolve(result);
+            } else
+                reject('Stats not found...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.createOne = async function createOne(newStats){
+    return new Promise((resolve, reject) => {
+        Stats.create(newStats)
+        .then(result => {
+            if(result)
+                resolve(result.dataValues);
+            else
+                reject('Stats not create...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.updateOne = async function updateOne(id, newStats){
+    return new Promise((resolve, reject) => {
+        Stats.update(
+            { name: newStats.name,
+              order: newStats.order,
+              deleted: newStats.deleted },
+            { where: {idStats:id} })
+        .then(result => {
+            if(result)
+                resolve(result.dataValues);
+            else
+                reject('Stats not found...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.deleteOneById = async function deleteOneById(id){
+    return new Promise((resolve, reject) => {
+        Stats.destroy({
+            where: {
+                idStats:id
             }
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some StatsLearn.. Good.. job?');
+                resolve('You have destroy sucessfully some Stats.. Good.. job?');
             } else
-                reject('StatsLearn not found...');
+                reject('Stats not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);

@@ -4,17 +4,13 @@ const error = require('../errors/notFound');
 const uuid = require('uuid/v4');
 
 // Import model
-const statsFunction = require('../path/stats/stats');
-const characterFunction = require('../path/character/character');
-const statsLearnFunction = require('../path/stats/statsLearn');
-const statsGiveFunction = require('../path/stats/statsGive');
-const bagFunction = require('../path/stuff/bag');
+const specialiteFunction = require('../path/categorie/specialite');
 
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
     
-    statsFunction.getAll()
+    specialiteFunction.getAll()
         .then((result) => {
             return res.send(result);
         })

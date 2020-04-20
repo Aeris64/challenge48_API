@@ -1,9 +1,9 @@
 // Import function
-const Learn = require('../../model/learn').module;
+const Offre = require('../../model/offre').module;
 
 exports.getAll = async function getAll(){
     return new Promise((resolve, reject) => {
-        Learn.findAll({})
+        Offre.findAll({})
         .then(allResult => {
             if(allResult) {
                 let finalRes = [];
@@ -20,18 +20,19 @@ exports.getAll = async function getAll(){
     });
 };
 
-exports.getAllByIdCharacters = async function getAllByIdCharacters(id){
+exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Learn.findAll({
+        Items.findOne({
             where: {
-                idCharacters:id
+                idItems:id,
+                deleted: null
             }
         })
         .then(result => {
             if(result) {
                 resolve(result);
             } else
-                reject('Not Learn...');
+                reject('Item not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -39,51 +40,73 @@ exports.getAllByIdCharacters = async function getAllByIdCharacters(id){
     });
 };
 
-exports.createOne = async function createOne(newLearn){
+exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
     return new Promise((resolve, reject) => {
-        Learn.create(newLearn)
-        .then(result => {
-            if(result)
-                resolve(result.dataValues);
-            else
-                reject('Learn not create...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.updateOne = async function updateOne(newLearn){
-    return new Promise((resolve, reject) => {
-        Learn.update(
-            { number: newLearn.number },
-            { where: {idCharacters: newLearn.idCharacters, idSkill: newLearn.idSkill} })
-        .then(result => {
-            if(result)
-                resolve(result.dataValues);
-            else
-                reject('Learn not found...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.deleteOneByIds = async function deleteOneByIds(Learn){
-    return new Promise((resolve, reject) => {
-        Learn.destroy({
+        Items.findAll({
             where: {
-                idCharacters: Learn.idCharacters,
-                idSkill: Learn.idSkill
+                idUniverse:id,
+                deleted: null
             }
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some Learn.. Good.. job?');
+                resolve(result);
             } else
-                reject('Learn not found...');
+                reject('Items not found...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.createOne = async function createOne(newItems){
+    return new Promise((resolve, reject) => {
+        Items.create(newItems)
+        .then(result => {
+            if(result)
+                resolve(result.dataValues);
+            else
+                reject('Item not create...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.updateOne = async function updateOne(id, newItems){
+    return new Promise((resolve, reject) => {
+        Items.update(
+            { name: newItems.name,
+              libelle: newItems.libelle,
+              unlocked: newItems.unlocked,
+              deleted: newItems.deleted },
+            { where: {idItems:id} })
+        .then(result => {
+            if(result)
+                resolve(result.dataValues);
+            else
+                reject('Items not found...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
+exports.deleteOneById = async function deleteOneById(id){
+    return new Promise((resolve, reject) => {
+        Items.destroy({
+            where: {
+                idItems:id
+            }
+        })
+        .then(result => {
+            if(result) {
+                resolve('You have destroy sucessfully some Items.. Good.. job?');
+            } else
+                reject('Items not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
