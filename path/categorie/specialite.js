@@ -22,17 +22,16 @@ exports.getAll = async function getAll(){
 
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
-        Stats.findOne({
+        Specialite.findOne({
             where: {
-                idStats:id,
-                deleted: null
+                id:id
             }
         })
         .then(result => {
             if(result) {
                 resolve(result);
             } else
-                reject('Stats not found...');
+                reject('Specialite not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -40,37 +39,14 @@ exports.getOneById = async function getOneById(id){
     });
 };
 
-exports.getAllByIdUniverse = async function getAllByIdUniverse(id){
+exports.createOne = async function createOne(newSpecialite){
     return new Promise((resolve, reject) => {
-        Stats.findAll({
-            where: {
-                idUniverse:id,
-                deleted: null
-            },
-            order: [
-                ['order', 'ASC']
-            ]
-        })
-        .then(result => {
-            if(result) {
-                resolve(result);
-            } else
-                reject('Stats not found...');
-        }).catch(err => {
-            console.log('error', err);
-            reject(err);
-        });
-    });
-};
-
-exports.createOne = async function createOne(newStats){
-    return new Promise((resolve, reject) => {
-        Stats.create(newStats)
+        Specialite.create(newSpecialite)
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Stats not create...');
+                reject('Specialite not create...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -78,18 +54,16 @@ exports.createOne = async function createOne(newStats){
     });
 };
 
-exports.updateOne = async function updateOne(id, newStats){
+exports.updateOne = async function updateOne(id, newSpecialite){
     return new Promise((resolve, reject) => {
-        Stats.update(
-            { name: newStats.name,
-              order: newStats.order,
-              deleted: newStats.deleted },
-            { where: {idStats:id} })
+        Specialite.update(
+            { libelle: newSpecialite.libelle },
+            { where: {id:id} })
         .then(result => {
             if(result)
                 resolve(result.dataValues);
             else
-                reject('Stats not found...');
+                reject('Specialite not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
@@ -99,16 +73,16 @@ exports.updateOne = async function updateOne(id, newStats){
 
 exports.deleteOneById = async function deleteOneById(id){
     return new Promise((resolve, reject) => {
-        Stats.destroy({
+        Specialite.destroy({
             where: {
-                idStats:id
+                id:id
             }
         })
         .then(result => {
             if(result) {
-                resolve('You have destroy sucessfully some Stats.. Good.. job?');
+                resolve('You have destroy sucessfully some Specialite.. Good.. job?');
             } else
-                reject('Stats not found...');
+                reject('Specialite not found...');
         }).catch(err => {
             console.log('error', err);
             reject(err);
