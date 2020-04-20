@@ -24,7 +24,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.get('/around/link', (req, res, next) => {
+router.post('/around/link', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
 
