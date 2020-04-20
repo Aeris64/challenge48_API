@@ -120,11 +120,23 @@ router.put('/:id', async (req, res, next) => {
         date = new Date().toJSON().slice(0, 10);
     }
     let client = {
+        nom: req.body.data.nom,
+        prenom: req.body.data.prenom,
+        contact: req.body.data.contact,
+        ville: req.body.data.ville,
+        code_postal: req.body.data.code_postal,
+        rue: req.body.data.rue,
         password: req.body.data.password
     };
 
     await clientFunction.getOneById(id)
         .then((result) => {
+            if(!client.nom) client.nom = result.nom;
+            if(!client.prenom) client.prenom = result.prenom;
+            if(!client.contact) client.contact = result.contact;
+            if(!client.ville) client.ville = result.ville;
+            if(!client.code_postal) client.code_postal = result.code_postal;
+            if(!client.rue) client.rue = result.rue;
             if(!client.password) client.password = result.password;
         })
         .catch((err) => {

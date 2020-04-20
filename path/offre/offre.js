@@ -20,6 +20,25 @@ exports.getAll = async function getAll(){
     });
 };
 
+exports.getAllByIdClient = async function getAllByIdClient(id){
+    return new Promise((resolve, reject) => {
+        Offre.findAll({
+            where: {
+                idClient:id
+            }
+        })
+        .then(result => {
+            if(result) {
+                resolve(result);
+            } else
+                reject('Offre not found...');
+        }).catch(err => {
+            console.log('error', err);
+            reject(err);
+        });
+    });
+};
+
 exports.getOneById = async function getOneById(id){
     return new Promise((resolve, reject) => {
         Offre.findOne({
