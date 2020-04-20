@@ -43,18 +43,19 @@ router.post('/around/link', (req, res, next) => {
             let finalRes = [];
             for(let res of result){
                 let client = await clientFunction.getOneById(res.idClient);
-                let categorie = await categorieFunction.getOneById(temp.id);
                 let testLat = client.dataValues.position_LAT;
                 let testLong = client.dataValues.position_LONG;
                 let calcul = Math.acos(Math.sin(myPos.lat*(Math.PI / 180))*Math.sin(testLat*(Math.PI / 180))+Math.cos(myPos.lat*(Math.PI / 180))*Math.cos(testLat*(Math.PI / 180))*Math.cos(myPos.long*(Math.PI/180)-testLong*(Math.PI/180)))*6371
-                if(calcul < nbKm && (myPos.specialite == categorie.idSpecialite || myPos.specialite == undefined)){
-                    let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                if(calcul < nbKm && (myPos.specialite == res.idSpecialite || myPos.specialite == undefined)){
+                    let categorie = await categorieFunction.getOneById(res.idCateg);
+                    let specialite = await specialiteFunction.getOneById(res.idSpecialite);
                     let temp = res;
                     temp.client = client.dataValues;
                     temp.categorie = categorie.dataValues;
-                    temp.categorie.specialite = specialite.dataValues.libelle;
+                    temp.specialite = specialite.dataValues;
                     temp.idClient = undefined;
                     temp.idCateg = undefined;
+                    temp.idSpecialite = undefined;
                     finalRes.push(temp);
                 }
             }
@@ -75,13 +76,14 @@ router.get('/link', (req, res, next) => {
             for(let res of result){
                 let temp = res;
                 let client = await clientFunction.getOneById(temp.idClient);
-                let categorie = await categorieFunction.getOneById(temp.id);
-                let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                let categorie = await categorieFunction.getOneById(temp.idCateg);
+                let specialite = await specialiteFunction.getOneById(temp.idSpecialite);
                 temp.client = client.dataValues;
                 temp.categorie = categorie.dataValues;
-                temp.categorie.specialite = specialite.dataValues.libelle;
+                temp.specialite = specialite.dataValues;
                 temp.idClient = undefined;
                 temp.idCateg = undefined;
+                temp.idSpecialite = undefined;
                 finalRes.push(temp);
             }
             return res.send(finalRes);
@@ -145,13 +147,14 @@ router.get('/:id/link', (req, res, next) => {
             if(!result.dataValues) return res.send(new error.NotFoundError('Offre not found...'));
             let finalRes = result.dataValues;
             let client = await clientFunction.getOneById(finalRes.idClient);
-            let categorie = await categorieFunction.getOneById(finalRes.id);
-            let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+            let categorie = await categorieFunction.getOneById(finalRes.idCateg);
+            let specialite = await specialiteFunction.getOneById(finalRes.idSpecialite);
             finalRes.client = client.dataValues;
             finalRes.categorie = categorie.dataValues;
-            finalRes.categorie.specialite = specialite.dataValues.libelle;
+            finalRes.specialite = specialite.dataValues;
             finalRes.idClient = undefined;
             finalRes.idCateg = undefined;
+            finalRes.idSpecialite = undefined;
             return res.send(finalRes);
         })
         .catch((err) => {
@@ -172,6 +175,7 @@ router.post('/', (req, res, next) => {
         id: uuid(),
         idClient: req.body.data.idClient,
         idCateg: req.body.data.idCateg,
+        idSpecialite: req.body.data.idSpecialite,
         libelle: req.body.data.libelle,
         payant: req.body.data.payant,
         horaires: req.body.data.horaires

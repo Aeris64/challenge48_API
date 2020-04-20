@@ -20,6 +20,10 @@ let Offre = sequelizeConnection.define('OFFRE', {
       allowNull: false,
       primaryKey: true
     },
+    idSpecialite: {
+      type: Sequelize.UUID,
+      allowNull: false
+    },
     libelle: {
       type: Sequelize.TEXT,
       allowNull: false

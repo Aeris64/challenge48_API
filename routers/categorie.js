@@ -75,7 +75,6 @@ router.put('/:id', async (req, res, next) => {
     await categorieFunction.getOneById(id)
         .then((result) => {
             if(!categorie.libelle) categorie.libelle = result.libelle;
-            if(!categorie.idSpecialite) categorie.idSpecialite = result.idSpecialite;
         })
         .catch((err) => {
             return res.send(new error.NotFoundError(err));

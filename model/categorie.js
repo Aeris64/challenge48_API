@@ -13,10 +13,6 @@ let Categorie = sequelizeConnection.define('CATEGORIE', {
     libelle: {
       type: Sequelize.STRING,
       allowNull: false
-    },
-    idSpecialite: {
-      type: Sequelize.UUID,
-      allowNull: false
     }
   },{
     timestamps: false,

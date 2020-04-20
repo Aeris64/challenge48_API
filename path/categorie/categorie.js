@@ -57,8 +57,7 @@ exports.createOne = async function createOne(newCategorie){
 exports.updateOne = async function updateOne(id, newCategorie){
     return new Promise((resolve, reject) => {
         Categorie.update(
-            { libelle: newCategorie.libelle,
-              idSpecialite: newCategorie.idSpecialite },
+            { libelle: newCategorie.libelle },
             { where: {id:id} })
         .then(result => {
             if(result)
