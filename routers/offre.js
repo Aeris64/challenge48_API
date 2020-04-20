@@ -103,15 +103,16 @@ router.get('/clients/:idClient/link', (req, res, next) => {
         .then(async (result) => {
             let finalRes = [];
             for(let res of result){
-                let temp = res;
+                let temp = res.dataValues;
                 let client = await clientFunction.getOneById(temp.idClient);
-                let categorie = await categorieFunction.getOneById(temp.id);
-                let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                let categorie = await categorieFunction.getOneById(temp.idCateg);
+                let specialite = await specialiteFunction.getOneById(temp.idSpecialite);
                 temp.client = client.dataValues;
                 temp.categorie = categorie.dataValues;
-                temp.categorie.specialite = specialite.dataValues.libelle;
+                temp.specialite = specialite.dataValues;
                 temp.idClient = undefined;
                 temp.idCateg = undefined;
+                temp.idSpecialite = undefined;
                 finalRes.push(temp);
             }
             return res.send(finalRes);
