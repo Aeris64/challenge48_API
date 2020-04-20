@@ -67,7 +67,7 @@ router.post('/', (req, res, next) => {
         req.body = req.body;
     }
     let offre = {
-        id: req.body.data.id,
+        id: uuid(),
         idClient: req.body.data.idClient,
         idCateg: req.body.data.idCateg,
         libelle: req.body.data.libelle,

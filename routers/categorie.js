@@ -44,7 +44,7 @@ router.post('/', (req, res, next) => {
         req.body = req.body;
     }
     let categorie = {
-        id: req.body.data.id,
+        id: uuid(),
         libelle: req.body.data.libelle
     };
 

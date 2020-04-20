@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const jsonfile = require('jsonfile');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // Import config
 const config = jsonfile.readFileSync('./config.json');
@@ -20,6 +21,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json({ type: 'application/*+json' }));
 
 app.use(express.json());
+
+app.use(cors());
 
 link = function linkStart(){
     return new Promise((resolve, reject) => {

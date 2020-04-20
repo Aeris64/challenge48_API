@@ -9,7 +9,7 @@ const specialiteFunction = require('../path/categorie/specialite');
 router.get('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
-    
+
     specialiteFunction.getAll()
         .then((result) => {
             return res.send(result);
@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
-    
+
     let id = req.params.id;
 
     specialiteFunction.getOneById(id)
@@ -37,14 +37,14 @@ router.get('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
     let myAuth = new error.KeyAuthentifictaion(req.query.key);
     if(!myAuth.authentifictaion()) return res.send(new error.BadRequestError('Bad API Key'));
-    
+
     try{
         req.body = JSON.parse(Object.keys(req.body)[0]);
     } catch(err) {
         req.body = req.body;
     }
     let specialite = {
-        id: req.body.data.id,
+        id: uuid(),
         libelle: req.body.data.libelle
     };
 

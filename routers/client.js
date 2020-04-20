@@ -82,7 +82,7 @@ router.post('/', (req, res, next) => {
     };
 
     let client = {
-        id: req.body.data.id,
+        id: uuid(),
         email: req.body.data.email,
         nom: req.body.data.nom,
         prenom: req.body.data.prenom,

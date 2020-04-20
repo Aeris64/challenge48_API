@@ -6,17 +6,17 @@ const sequelizeConnection = require('../login/loginBDD').login;
 
 let Offre = sequelizeConnection.define('OFFRE', {
     id: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       primaryKey: true
     },
     idClient: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       primaryKey: true
     },
     idCateg: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       primaryKey: true
     },

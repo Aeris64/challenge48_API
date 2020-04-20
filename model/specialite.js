@@ -6,7 +6,7 @@ const sequelizeConnection = require('../login/loginBDD').login;
 
 let Specialite = sequelizeConnection.define('SPECIALITE', {
     id: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       primaryKey: true,
       allowNull: false
     },
