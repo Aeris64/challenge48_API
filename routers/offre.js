@@ -34,7 +34,8 @@ router.post('/around/link', (req, res, next) => {
 
     let myPos = {
         lat: req.body.data.lat || 44.870168199,
-        long: req.body.data.long || -0.551752599
+        long: req.body.data.long || -0.551752599,
+        specialite: req.body.data.idSpecialite || undefined
     }
     
     offreFunction.getAll()
@@ -42,13 +43,13 @@ router.post('/around/link', (req, res, next) => {
             let finalRes = [];
             for(let res of result){
                 let client = await clientFunction.getOneById(res.idClient);
+                let categorie = await categorieFunction.getOneById(temp.id);
                 let testLat = client.dataValues.position_LAT;
                 let testLong = client.dataValues.position_LONG;
                 let calcul = Math.acos(Math.sin(myPos.lat*(Math.PI / 180))*Math.sin(testLat*(Math.PI / 180))+Math.cos(myPos.lat*(Math.PI / 180))*Math.cos(testLat*(Math.PI / 180))*Math.cos(myPos.long*(Math.PI/180)-testLong*(Math.PI/180)))*6371
-                if(calcul < nbKm){
-                    let temp = res;
-                    let categorie = await categorieFunction.getOneById(temp.id);
+                if(calcul < nbKm && (myPos.specialite == categorie.idSpecialite || myPos.specialite == undefined)){
                     let specialite = await specialiteFunction.getOneById(categorie.dataValues.idSpecialite);
+                    let temp = res;
                     temp.client = client.dataValues;
                     temp.categorie = categorie.dataValues;
                     temp.categorie.specialite = specialite.dataValues.libelle;
